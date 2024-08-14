@@ -32,7 +32,9 @@ esac
 
 export DOWNLOAD_URL="https://mirrors.tuna.tsinghua.edu.cn/docker-ce"
 
-wget -O- https://gitee.com/songdaoyuan/hkzc-dev-ops-tools/raw/master/Docker/GetDocker.sh | sh --version 20.10.21
+wget -O GetDocker.sh https://gitee.com/songdaoyuan/hkzc-dev-ops-tools/raw/master/Docker/GetDocker.sh && sh GetDocker.sh --version 20.10.21
+
+rm -f GetDocker.sh
 
 # 如果需要手动安装, 以下是安装流程
 
