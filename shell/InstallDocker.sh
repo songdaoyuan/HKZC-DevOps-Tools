@@ -4,11 +4,7 @@
 # 流程参考自:https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/
 # 所有需要通过*.docker.*下载的文件均已备份在gitee或者使用TUNA源
 
-set -exu
-
 echo "必须以root用户或者使用sudo权限来运行此脚本, 如果你之前安装过其他版本的Docker或者组件, 请先清理"
-
-su -
 
 os_name=$(hostnamectl | grep 'Operating System' | awk '{print $3}')
 
