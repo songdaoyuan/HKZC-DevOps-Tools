@@ -2,7 +2,8 @@
 #
 # LemonBench-Next - 下一代Linux性能基准测试工具
 # Author: iLemonrain <ilemonrain@ilemonrain.com>
-# Edit by daoyohaN
+# Edit by songdaoyuan@20240814
+# move github source to gitee source
 #
 # ===== 全局变量 =====
 # -> LemonBench工作基础路径

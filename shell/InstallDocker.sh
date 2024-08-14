@@ -1,10 +1,11 @@
 #!/bin/bash
 # code by songdaoyuan@20240814
-# 检测OS版本 -> 卸载现有的Docker -> 安装生产使用的20.10.21
+# 用于在常见的发行版上安装docker-engine version 20.10.21
+# 检测OS版本 -> 卸载现有的Docker -> 安装生产使用的版本
 # 流程参考自:https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/
-# 所有需要通过*.docker.*下载的文件均已备份在gitee或者使用TUNA源
+# 所有需要通过*.docker.*下载的文件均已备份在gitee或者使用TUNA源, 便于未配置代理的服务器上使用
 
-echo "必须以root用户或者使用sudo权限来运行此脚本, 如果你之前安装过其他版本的Docker或者组件, 请先清理"
+echo "必须以root用户或者使用sudo权限来运行此脚本, 如果你之前安装过其他版本的Docker或者组件, 脚本会执行清理"
 
 os_name=$(hostnamectl | grep 'Operating System' | awk '{print $3}')
 
