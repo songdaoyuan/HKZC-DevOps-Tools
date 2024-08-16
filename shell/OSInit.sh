@@ -2,30 +2,45 @@
 # 安装完Linux SRV后需要做的事情
 
 # 配置镜像源、更新包列表和软件包、安装必备软件包
+
 # 确保SSHD已经开启, 且启用了root的密码登录
 enable_root_ssh_login() {
-
     # 修改 PermitRootLogin 为 yes
     SSHD_CONFIG="/etc/ssh/sshd_config"
     if grep -q "^PermitRootLogin" $SSHD_CONFIG; then
-        sudo sed -i 's/^PermitRootLogin.*/PermitRootLogin yes/' $SSHD_CONFIG
+        sed -i 's/^PermitRootLogin.*/PermitRootLogin yes/' $SSHD_CONFIG
     else
-        echo "PermitRootLogin yes" | sudo tee -a $SSHD_CONFIG
+        echo "PermitRootLogin yes" | tee -a $SSHD_CONFIG
     fi
 
     # 修改 PasswordAuthentication 为 yes
     if grep -q "^PasswordAuthentication" $SSHD_CONFIG; then
-        sudo sed -i 's/^PasswordAuthentication.*/PasswordAuthentication yes/' $SSHD_CONFIG
+        sed -i 's/^PasswordAuthentication.*/PasswordAuthentication yes/' $SSHD_CONFIG
     else
-        echo "PasswordAuthentication yes" | sudo tee -a $SSHD_CONFIG
+        echo "PasswordAuthentication yes" | tee -a $SSHD_CONFIG
     fi
     systemctl restart sshd
     echo "SSH 配置已修改并重启服务。root 用户的 SSH 密码登录已启用。"
-
 }
+
 # 配置时间同步
-# 关闭SELinux
+config_date_sync() {
+    timedatectl set-timezone Asia/Shanghai
+    systemctl enable chronyd
+    systemctl start chronyd
+    chronyc -a makestep
+}
+
+# 关闭SELinux, 还有AppArmor?
+disable_selinux() {
+    setenforce 0
+    sudo sed -i 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
+}
+
 # 处理防火墙
+config_firewall() {
+    echo
+}
 
 # Red Hat Enterprise Linux (RHEL)、CentOS、Rocky Linux / AlmaLinux、Fedora Server 默认开启了SELinux
 
@@ -35,6 +50,7 @@ enable_root_ssh_login() {
 # 可以使用systemctl 管理 firewalld、iptables、ufw
 
 echo "必须以root用户或者使用sudo权限来运行此脚本, 这个脚本会按序执行命令初始化SRV"
+echo "在生产模式中启用root的SSH登录以及关闭SELinux是不安全的, 请注意做好服务器加固工作"
 
 os_name=$(hostnamectl | grep 'Operating System' | awk '{print $3}')
 
@@ -44,13 +60,17 @@ case "$os_name" in
 
     # 配置镜像源、更新包列表和软件包、安装必备软件包
     yum update -y
-    yum -y install curl vim openssh-server
+    yum -y install curl vim openssh-server chrony
+
+    # 关闭SELinux
+    disable_selinux
 
     ;;
 "Ubuntu" | "Debian")
+
     # 配置镜像源、更新包列表和软件包、安装必备软件包
-    apt update && sudo apt upgrade -y
-    apt install curl vim openssh-server -y
+    apt update && apt upgrade -y
+    apt install curl vim openssh-server chrony -y
 
     ;;
 *)
@@ -61,3 +81,5 @@ esac
 
 # 确保SSHD已经开启, 且启用了root的密码登录
 enable_root_ssh_login
+# 配置时间同步
+config_date_sync
