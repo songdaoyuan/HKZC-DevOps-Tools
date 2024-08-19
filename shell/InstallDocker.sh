@@ -35,6 +35,8 @@ export DOWNLOAD_URL="https://mirrors.tuna.tsinghua.edu.cn/docker-ce"
 
 wget -O GetDocker.sh https://gitee.com/songdaoyuan/hkzc-dev-ops-tools/raw/master/Docker/GetDocker.sh && sh GetDocker.sh --version 20.10.21
 
+wget -P /usr/local/bin -O docker-compose https://gitee.com/songdaoyuan/hkzc-dev-ops-tools/raw/master/Docker/docker-compose/docker-compose-v2.28.1 && chmod +x /usr/local/bin/docker-compose
+
 rm -f GetDocker.sh
 
 # 如果需要手动安装, 以下是安装流程
