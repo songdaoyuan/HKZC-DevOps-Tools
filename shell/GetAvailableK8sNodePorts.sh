@@ -8,8 +8,15 @@ end_port=32767
 
 # 查找可用的 NodePort
 echo "Available NodePorts:"
-for ((port=start_port; port<=end_port; port++)); do
+for ((port = start_port; port <= end_port; port++)); do
     if ! echo "$used_ports" | grep -q "^$port$"; then
         echo $port
     fi
 done
+
+# always have plan b
+# for port in {30000..32767}; do
+#     if ! kubectl get services --all-namespaces -o jsonpath='{.items[*].spec.ports[*].nodePort}' | grep -q "\b$port\b"; then
+#         echo "Port $port is available"
+#     fi
+# done
