@@ -1,7 +1,9 @@
 #!/bin/bash
-# 安装完Linux SRV后需要做的事情
+# code by songdaoyuan@20240816
+# 用于初始化部署后的Linux Server
 
 # 配置镜像源、更新包列表和软件包、安装必备软件包
+# 关闭DHCP, 使用固定IP, 使用安全的DNS
 
 # 确保SSHD已经开启, 且启用了root的密码登录
 enable_root_ssh_login() {
