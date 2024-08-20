@@ -31,8 +31,8 @@ config_date_sync() {
     chronyc -a makestep
 }
 
-# 关闭SELinux, 还有AppArmor?
-disable_selinux() {
+# 关闭SELinux, 或AppArmor
+disable_security() {
     setenforce 0
     sudo sed -i 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
 }
@@ -50,7 +50,7 @@ config_firewall() {
 # 可以使用systemctl 管理 firewalld、iptables、ufw
 
 echo "必须以root用户或者使用sudo权限来运行此脚本, 这个脚本会按序执行命令初始化SRV"
-echo "在生产模式中启用root的SSH登录以及关闭SELinux是不安全的, 请注意做好服务器加固工作"
+echo "在生产模式中启用root的SSH登录以及关闭SELinux / AppArmor是不安全的, 请注意做好服务器加固工作"
 
 os_name=$(hostnamectl | grep 'Operating System' | awk '{print $3}')
 
