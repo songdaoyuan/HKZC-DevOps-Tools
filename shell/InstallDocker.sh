@@ -4,6 +4,7 @@
 # 检测OS版本 -> 卸载现有的Docker -> 安装生产使用的版本
 # 流程参考自:https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/
 # 所有需要通过*.docker.*下载的文件均已备份在gitee或者使用TUNA源, 便于未配置代理的服务器上使用
+#TODO wget拉取完成大文件应当增加CRC校验
 
 echo "必须以root用户或者使用sudo权限来运行此脚本, 如果你之前安装过其他版本的Docker或者组件, 脚本会执行清理"
 
@@ -31,13 +32,20 @@ case "$os_name" in
     ;;
 esac
 
+echo "旧的Docker相关组件清理完成"
+
 export DOWNLOAD_URL="https://mirrors.tuna.tsinghua.edu.cn/docker-ce"
 
 wget -O GetDocker.sh https://gitee.com/songdaoyuan/hkzc-dev-ops-tools/raw/master/Docker/GetDocker.sh && sh GetDocker.sh --version 20.10.21
 
-wget -P /usr/local/bin -O docker-compose https://gitee.com/songdaoyuan/hkzc-dev-ops-tools/raw/master/Docker/docker-compose/docker-compose-v2.28.1 && chmod +x /usr/local/bin/docker-compose
+echo "Docker 20.10.21安装完成, 即将在/usr/local/bin 安装docker-compose"
+
+#TODO wget拉取完成大文件应当增加CRC校验
+wget -O /usr/local/bin/docker-compose https://gitee.com/songdaoyuan/hkzc-dev-ops-tools/raw/master/Docker/docker-compose/docker-compose-v2.28.1 && chmod +x /usr/local/bin/docker-compose
 
 rm -f GetDocker.sh
+
+echo "全部安装完成"
 
 # 如果需要手动安装, 以下是安装流程
 
