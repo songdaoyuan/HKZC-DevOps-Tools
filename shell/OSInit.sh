@@ -2,7 +2,7 @@
 # code by songdaoyuan@20240816
 # 用于初始化部署后的Linux Server
 # 基础流程:
-#   1.配置镜像源、更新包列表和软件包、安装必备软件包
+#   1.配置镜像源（CentOS7 阿里源）、更新包列表和软件包、安装必备软件包
 #   2.关闭DHCP, 使用固定IP, 使用安全的DNS
 #   3.确保SSHD已经开启, 且启用了root的密码登录
 #   4.配置时间同步
@@ -124,6 +124,7 @@ DB_config_static_ip(){
 EOF
 
     # 应用新的网络配置
+    chmod 600 $CONFIG_FILE
     netplan apply
 }
 
@@ -146,7 +147,7 @@ fi
 echo "在生产模式中启用root的SSH登录以及关闭SELinux / AppArmor是不安全的, 请注意做好服务器加固工作"
 
 #****************模块化测试区域
-
+DB_config_static_ip
 
 exit 1
 #****************结束
