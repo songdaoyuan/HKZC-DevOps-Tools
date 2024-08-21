@@ -109,14 +109,17 @@ DB_config_static_ip(){
 
     cat << EOF > $CONFIG_FILE
     network:
-    version: 2
-    renderer: networkd
-    ethernets:
+      version: 2
+      renderer: networkd
+      ethernets:
         $INTERFACE:
-        dhcp4: no
-        addresses: [$NEW_IP/$NETMASK]
-        gateway4: $GATEWAY
-        nameservers:
+          dhcp4: no
+          addresses: 
+            - $NEW_IP/$NETMASK
+          routes:
+            - to: default
+              via: $GATEWAY
+          nameservers:
             addresses: [$DNS1, $DNS2]
 EOF
 
@@ -141,6 +144,12 @@ if [ "$(id -u)" != "0" ]; then
     exit 1
 fi
 echo "在生产模式中启用root的SSH登录以及关闭SELinux / AppArmor是不安全的, 请注意做好服务器加固工作"
+
+#****************模块化测试区域
+
+
+exit 1
+#****************结束
 
 os_name=$(hostnamectl | grep 'Operating System' | awk '{print $3}')
 
