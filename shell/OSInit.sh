@@ -1,8 +1,9 @@
 #!/bin/bash
 # code by songdaoyuan@20240816
+# 20240821 V0.1
 # 用于初始化部署后的Linux Server
 # 基础流程:
-#  × 1.配置镜像源（CentOS7 阿里源）、更新包列表和软件包、安装必备软件包
+#  √ 1.配置镜像源、更新包列表和软件包、安装必备软件包
 #  √ 2.关闭DHCP, 使用固定IP, 使用安全的DNS
 #  √ 3.确保SSHD已经开启, 且启用了root的密码登录
 #  √ 4.配置时间同步
@@ -14,6 +15,7 @@
 
 config_mirror() {
     # 检测发行版类型和版本
+    # 目前只适配了Ubuntu全系和CentOS
     if [ -f /etc/os-release ]; then
         . /etc/os-release
         OS=$NAME
@@ -38,20 +40,31 @@ config_mirror() {
         TUNA_MIRROR="https://mirrors.tuna.tsinghua.edu.cn/ubuntu/"
         ALI_MIRROR="https://mirrors.aliyun.com/ubuntu/"
         cp $SOURCE_LIST ${SOURCE_LIST}.bak
-        echo "3. Replace content with:"
         cat /dev/null >$SOURCE_LIST
         echo "deb $TUNA_MIRROR $(lsb_release -cs) main restricted universe multiverse" >>SOURCE_LIST
         echo "deb $TUNA_MIRROR $(lsb_release -cs)-updates main restricted universe multiverse" >>SOURCE_LIST
         echo "deb $TUNA_MIRROR $(lsb_release -cs)-backports main restricted universe multiverse" >>SOURCE_LIST
         echo "deb $ALI_MIRROR $(lsb_release -cs)-security main restricted universe multiverse" >>SOURCE_LIST
+
+        # 更新包列表和软件包、安装必备软件包
+        apt update && apt upgrade -y
+        apt install curl vim openssh-server chrony -y
         ;;
     *"centos"* | *"red hat"* | *"rhel"*)
-        echo "Detected CentOS/RHEL $VER"
+        echo "检测到 CentOS/RHEL $VER"
+        mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+        wget -O /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-${VER}.repo
+
+        # 更新包列表和软件包、安装必备软件包
+        yum clean all && yum makecache
+        yum update -y
+        yum -y install curl vim openssh-server chrony
         ;;
     *)
         echo "非适配的Linux发行版: ${OS}${VER}"
         ;;
     esac
+    echo "替换镜像源完成"
 }
 
 enable_root_ssh_login() {
@@ -131,7 +144,7 @@ unlock_resource_limits() {
     echo "$DB  hard      data       unlimited" >>$LIMITS_CONF
 }
 
-config_firewall() {
+disable_firewall() {
 
     # Red Hat Enterprise Linux (RHEL)、CentOS、Rocky Linux / AlmaLinux、Fedora Server 使用Firewalld
     # Debain系传统使用iptables、Ubuntu使用ufw
@@ -227,29 +240,39 @@ echo "在生产模式中启用root的SSH登录以及关闭SELinux/AppArmor是不
 #****************结束
 
 os_name=$(hostnamectl | grep 'Operating System' | awk '{print $3}')
-
-# 根据操作系统名称调用对应的包管理器
 case "$os_name" in
 "CentOS" | "Fedora" | "RHEL" | "Rocky" | "AlmaLinux")
-
+    # 第一步: 配置镜像源
+    config_mirror
+    # 第二步: 配置网络
     RH_config_static_ip
-    # 配置镜像源、更新包列表和软件包、安装必备软件包
-    yum update -y
-    yum -y install curl vim openssh-server chrony
-
-    # 关闭SELinux
+    # 第三步: 配置SSHD
+    enable_root_ssh_login
+    # 第四步: 配置时间同步
+    config_date_sync
+    # 第五步: 关闭安全组件
     RH_disable_selinux
+    # 第六步: 关闭防火墙
+    disable_firewall
+    # 第七步（可选）: 解除Linux进程资源限制
+    # unlock_resource_limits
 
     ;;
 "Ubuntu" | "Debian")
-
+    # 第一步: 配置镜像源
+    config_mirror
+    # 第二步: 配置网络
     DB_config_static_ip
-    # 配置镜像源、更新包列表和软件包、安装必备软件包
-    apt update && apt upgrade -y
-    apt install curl vim openssh-server chrony -y
-
-    # 关闭AppArmor
-    disable_apparmor
+    # 第三步: 配置SSHD
+    enable_root_ssh_login
+    # 第四步: 配置时间同步
+    config_date_sync
+    # 第五步: 关闭安全组件
+    DB_disable_apparmor
+    # 第六步: 关闭防火墙
+    disable_firewall
+    # 第七步（可选）: 解除Linux进程资源限制
+    # unlock_resource_limits
 
     ;;
 *)
@@ -257,6 +280,3 @@ case "$os_name" in
     exit 1
     ;;
 esac
-
-enable_root_ssh_login
-config_date_sync
