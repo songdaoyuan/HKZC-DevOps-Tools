@@ -8,7 +8,7 @@
 #  √ 4.配置时间同步
 #  √ 5.关闭SELinux / AppArmor
 #   6.处理防火墙
-#   7.（可选）解除Linux对密集读写的性能限制, 优化数据库性能
+#  √ 7.（可选）解除Linux对密集读写的性能限制, 优化数据库性能
 
 #*********************** 公用的函数, 函数内部的shell指令在发行版中通用
 
@@ -89,6 +89,29 @@ unlock_resource_limits(){
     echo "$DB  hard      data       unlimited" >> $LIMITS_CONF
 }
 
+config_firewall() {
+    
+    # Red Hat Enterprise Linux (RHEL)、CentOS、Rocky Linux / AlmaLinux、Fedora Server 使用Firewalld
+    # Debain系传统使用iptables、Ubuntu使用ufw
+    # openSUSE Leap/SUSE Linux Enterprise Server (SLES) 默认情况下，openSUSE 和 SLES 都使用 firewalld，但它们同时也支持 iptables
+    # 可以使用systemctl 管理 firewalld、iptables、ufw
+
+    if systemctl is-active --quiet firewalld; then
+        systemctl stop firewalld
+        systemctl disable firewalld
+        echo "firewalld 已停用"
+    elif systemctl is-active --quiet ufw; then
+        ufw disable
+        echo "ufw 已停用"
+    elif systemctl is-active --quiet iptables; then
+        systemctl stop iptables
+        systemctl disable iptables
+        echo "iptables 已停用"
+    else
+        echo "系统中为找到活动防火墙"
+    fi
+}
+
 #*********************** 适用于 RH 系发行版的函数
 
 RH_disable_selinux() {
@@ -149,16 +172,6 @@ EOF
     netplan apply
 }
 
-config_firewall() {
-    echo
-}
-
-
-
-# Red Hat Enterprise Linux (RHEL)、CentOS、Rocky Linux / AlmaLinux、Fedora Server 使用Firewalld
-# Debain系传统使用iptables、Ubuntu使用ufw
-# openSUSE Leap/SUSE Linux Enterprise Server (SLES) 默认情况下，openSUSE 和 SLES 都使用 firewalld，但它们同时也支持 iptables
-# 可以使用systemctl 管理 firewalld、iptables、ufw
 
 # 确保脚本以root权限运行
 if [ "$(id -u)" != "0" ]; then
