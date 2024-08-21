@@ -2,11 +2,11 @@
 # code by songdaoyuan@20240816
 # 用于初始化部署后的Linux Server
 # 基础流程:
-#   1.配置镜像源（CentOS7 阿里源）、更新包列表和软件包、安装必备软件包
-#   2.关闭DHCP, 使用固定IP, 使用安全的DNS
-#   3.确保SSHD已经开启, 且启用了root的密码登录
-#   4.配置时间同步
-#   5.关闭SELinux / AppArmor
+#  × 1.配置镜像源（CentOS7 阿里源）、更新包列表和软件包、安装必备软件包
+#  √ 2.关闭DHCP, 使用固定IP, 使用安全的DNS
+#  √ 3.确保SSHD已经开启, 且启用了root的密码登录
+#  √ 4.配置时间同步
+#  √ 5.关闭SELinux / AppArmor
 #   6.处理防火墙
 #   7.（可选）解除Linux对密集读写的性能限制, 优化数据库性能
 
@@ -69,9 +69,30 @@ get_netinfo(){
     fi
 }
 
+unlock_resource_limits(){
+    LIMITS_CONF="/etc/security/limits.conf"
+    DB="mysql"
+    echo "#UNLOCK $DB RESOURCE LIMITS" >>$LIMITS_CONF
+    echo "$DB  soft      nice       0" >> $LIMITS_CONF
+    echo "$DB  hard      nice       0" >> $LIMITS_CONF
+    echo "$DB  soft      as         unlimited" >> $LIMITS_CONF
+    echo "$DB  hard      as         unlimited" >> $LIMITS_CONF
+    echo "$DB  soft      fsize      unlimited" >> $LIMITS_CONF
+    echo "$DB  hard      fsize      unlimited" >> $LIMITS_CONF
+    echo "$DB  soft      nproc      65536" >> $LIMITS_CONF
+    echo "$DB  hard      nproc      65536" >> $LIMITS_CONF
+    echo "$DB  soft      nofile     65536" >> $LIMITS_CONF
+    echo "$DB  hard      nofile     65536" >> $LIMITS_CONF
+    echo "$DB  soft      core       unlimited" >> $LIMITS_CONF
+    echo "$DB  hard      core       unlimited" >> $LIMITS_CONF
+    echo "$DB  soft      data       unlimited" >> $LIMITS_CONF
+    echo "$DB  hard      data       unlimited" >> $LIMITS_CONF
+}
+
 #*********************** 适用于 RH 系发行版的函数
 
 RH_disable_selinux() {
+    # Red Hat Enterprise Linux (RHEL)、CentOS、Rocky Linux / AlmaLinux、Fedora Server 默认开启了SELinux
     setenforce 0
     sudo sed -i 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config
 }
@@ -97,8 +118,8 @@ RH_config_static_ip() {
 
 #*********************** 适用于 Debain 系发行版的函数
 
-disable_apparmor() {
-    echo
+DB_disable_apparmor() {
+    systemctl disable apparmor
 }
 
 DB_config_static_ip(){
@@ -132,7 +153,7 @@ config_firewall() {
     echo
 }
 
-# Red Hat Enterprise Linux (RHEL)、CentOS、Rocky Linux / AlmaLinux、Fedora Server 默认开启了SELinux
+
 
 # Red Hat Enterprise Linux (RHEL)、CentOS、Rocky Linux / AlmaLinux、Fedora Server 使用Firewalld
 # Debain系传统使用iptables、Ubuntu使用ufw
@@ -141,15 +162,15 @@ config_firewall() {
 
 # 确保脚本以root权限运行
 if [ "$(id -u)" != "0" ]; then
-    echo "必须以root用户或者使用sudo权限来运行此脚本, 这个脚本会按序执行命令初始化SRV" 1>&2
+    echo "必须以root用户或者使用sudo权限来运行此脚本, 这个脚本会按序执行命令初始化Linux Server" 1>&2
     exit 1
 fi
-echo "在生产模式中启用root的SSH登录以及关闭SELinux / AppArmor是不安全的, 请注意做好服务器加固工作"
+echo "在生产模式中启用root的SSH登录以及关闭SELinux/AppArmor是不安全的, 请注意做好服务器加固工作"
 
 #****************模块化测试区域
-DB_config_static_ip
 
-exit 1
+
+# exit 1
 #****************结束
 
 os_name=$(hostnamectl | grep 'Operating System' | awk '{print $3}')
