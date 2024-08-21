@@ -7,10 +7,52 @@
 #  √ 3.确保SSHD已经开启, 且启用了root的密码登录
 #  √ 4.配置时间同步
 #  √ 5.关闭SELinux / AppArmor
-#   6.处理防火墙
+#  √ 6.处理防火墙
 #  √ 7.（可选）解除Linux对密集读写的性能限制, 优化数据库性能
 
 #*********************** 公用的函数, 函数内部的shell指令在发行版中通用
+
+config_mirror() {
+    # 检测发行版类型和版本
+    if [ -f /etc/os-release ]; then
+        . /etc/os-release
+        OS=$NAME
+        VER=$VERSION_ID
+    elif type lsb_release >/dev/null 2>&1; then
+        OS=$(lsb_release -si)
+        VER=$(lsb_release -sr)
+    elif [ -f /etc/lsb-release ]; then
+        . /etc/lsb-release
+        OS=$DISTRIB_ID
+        VER=$DISTRIB_RELEASE
+    else
+        OS=$(uname -s)
+        VER=$(uname -r)
+    fi
+    # 转换为小写
+    OS=$(echo "$OS" | tr '[:upper:]' '[:lower:]')
+    case $OS in
+    *"ubuntu"*)
+        echo "检测到 Ubuntu $VER"
+        SOURCE_LIST=/etc/apt/sources.list
+        TUNA_MIRROR="https://mirrors.tuna.tsinghua.edu.cn/ubuntu/"
+        ALI_MIRROR="https://mirrors.aliyun.com/ubuntu/"
+        cp $SOURCE_LIST ${SOURCE_LIST}.bak
+        echo "3. Replace content with:"
+        cat /dev/null >$SOURCE_LIST
+        echo "deb $TUNA_MIRROR $(lsb_release -cs) main restricted universe multiverse" >>SOURCE_LIST
+        echo "deb $TUNA_MIRROR $(lsb_release -cs)-updates main restricted universe multiverse" >>SOURCE_LIST
+        echo "deb $TUNA_MIRROR $(lsb_release -cs)-backports main restricted universe multiverse" >>SOURCE_LIST
+        echo "deb $ALI_MIRROR $(lsb_release -cs)-security main restricted universe multiverse" >>SOURCE_LIST
+        ;;
+    *"centos"* | *"red hat"* | *"rhel"*)
+        echo "Detected CentOS/RHEL $VER"
+        ;;
+    *)
+        echo "非适配的Linux发行版: ${OS}${VER}"
+        ;;
+    esac
+}
 
 enable_root_ssh_login() {
     # 修改 PermitRootLogin 为 yes
@@ -38,7 +80,7 @@ config_date_sync() {
     chronyc -a makestep
 }
 
-get_netinfo(){
+get_netinfo() {
     # 获取当前活动的网络接口
     INTERFACE=$(ip route | grep default | awk '{print $5}')
     # 获取当前IP地址
@@ -69,28 +111,28 @@ get_netinfo(){
     fi
 }
 
-unlock_resource_limits(){
+unlock_resource_limits() {
     LIMITS_CONF="/etc/security/limits.conf"
     DB="mysql"
     echo "#UNLOCK $DB RESOURCE LIMITS" >>$LIMITS_CONF
-    echo "$DB  soft      nice       0" >> $LIMITS_CONF
-    echo "$DB  hard      nice       0" >> $LIMITS_CONF
-    echo "$DB  soft      as         unlimited" >> $LIMITS_CONF
-    echo "$DB  hard      as         unlimited" >> $LIMITS_CONF
-    echo "$DB  soft      fsize      unlimited" >> $LIMITS_CONF
-    echo "$DB  hard      fsize      unlimited" >> $LIMITS_CONF
-    echo "$DB  soft      nproc      65536" >> $LIMITS_CONF
-    echo "$DB  hard      nproc      65536" >> $LIMITS_CONF
-    echo "$DB  soft      nofile     65536" >> $LIMITS_CONF
-    echo "$DB  hard      nofile     65536" >> $LIMITS_CONF
-    echo "$DB  soft      core       unlimited" >> $LIMITS_CONF
-    echo "$DB  hard      core       unlimited" >> $LIMITS_CONF
-    echo "$DB  soft      data       unlimited" >> $LIMITS_CONF
-    echo "$DB  hard      data       unlimited" >> $LIMITS_CONF
+    echo "$DB  soft      nice       0" >>$LIMITS_CONF
+    echo "$DB  hard      nice       0" >>$LIMITS_CONF
+    echo "$DB  soft      as         unlimited" >>$LIMITS_CONF
+    echo "$DB  hard      as         unlimited" >>$LIMITS_CONF
+    echo "$DB  soft      fsize      unlimited" >>$LIMITS_CONF
+    echo "$DB  hard      fsize      unlimited" >>$LIMITS_CONF
+    echo "$DB  soft      nproc      65536" >>$LIMITS_CONF
+    echo "$DB  hard      nproc      65536" >>$LIMITS_CONF
+    echo "$DB  soft      nofile     65536" >>$LIMITS_CONF
+    echo "$DB  hard      nofile     65536" >>$LIMITS_CONF
+    echo "$DB  soft      core       unlimited" >>$LIMITS_CONF
+    echo "$DB  hard      core       unlimited" >>$LIMITS_CONF
+    echo "$DB  soft      data       unlimited" >>$LIMITS_CONF
+    echo "$DB  hard      data       unlimited" >>$LIMITS_CONF
 }
 
 config_firewall() {
-    
+
     # Red Hat Enterprise Linux (RHEL)、CentOS、Rocky Linux / AlmaLinux、Fedora Server 使用Firewalld
     # Debain系传统使用iptables、Ubuntu使用ufw
     # openSUSE Leap/SUSE Linux Enterprise Server (SLES) 默认情况下，openSUSE 和 SLES 都使用 firewalld，但它们同时也支持 iptables
@@ -108,7 +150,7 @@ config_firewall() {
         systemctl disable iptables
         echo "iptables 已停用"
     else
-        echo "系统中为找到活动防火墙"
+        echo "系统中未找到活动的防火墙"
     fi
 }
 
@@ -122,7 +164,7 @@ RH_disable_selinux() {
 
 RH_config_static_ip() {
     get_netinfo
-    
+
     # 创建新的网络配置文件
     CONFIG_FILE="/etc/sysconfig/network-scripts/ifcfg-$INTERFACE"
 
@@ -145,13 +187,13 @@ DB_disable_apparmor() {
     systemctl disable apparmor
 }
 
-DB_config_static_ip(){
+DB_config_static_ip() {
     get_netinfo
-    
+
     # 创建新的Netplan配置文件
     CONFIG_FILE="/etc/netplan/01-netcfg.yaml"
 
-    cat << EOF > $CONFIG_FILE
+    cat <<EOF >$CONFIG_FILE
     network:
       version: 2
       renderer: networkd
@@ -172,7 +214,6 @@ EOF
     netplan apply
 }
 
-
 # 确保脚本以root权限运行
 if [ "$(id -u)" != "0" ]; then
     echo "必须以root用户或者使用sudo权限来运行此脚本, 这个脚本会按序执行命令初始化Linux Server" 1>&2
@@ -182,7 +223,6 @@ echo "在生产模式中启用root的SSH登录以及关闭SELinux/AppArmor是不
 
 #****************模块化测试区域
 
-
 # exit 1
 #****************结束
 
@@ -191,7 +231,7 @@ os_name=$(hostnamectl | grep 'Operating System' | awk '{print $3}')
 # 根据操作系统名称调用对应的包管理器
 case "$os_name" in
 "CentOS" | "Fedora" | "RHEL" | "Rocky" | "AlmaLinux")
-    
+
     RH_config_static_ip
     # 配置镜像源、更新包列表和软件包、安装必备软件包
     yum update -y
