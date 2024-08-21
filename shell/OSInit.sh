@@ -242,6 +242,7 @@ echo "在生产模式中启用root的SSH登录以及关闭SELinux/AppArmor是不
 os_name=$(hostnamectl | grep 'Operating System' | awk '{print $3}')
 case "$os_name" in
 "CentOS" | "Fedora" | "RHEL" | "Rocky" | "AlmaLinux")
+    
     # 第一步: 配置镜像源
     config_mirror
     # 第二步: 配置网络
@@ -259,6 +260,7 @@ case "$os_name" in
 
     ;;
 "Ubuntu" | "Debian")
+    
     # 第一步: 配置镜像源
     config_mirror
     # 第二步: 配置网络
