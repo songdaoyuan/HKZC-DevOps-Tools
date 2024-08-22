@@ -156,7 +156,8 @@ disable_firewall() {
         systemctl disable firewalld
         echo "firewalld 已停用"
     elif systemctl is-active --quiet ufw; then
-        ufw disable
+        systemctl stop ufw
+        systemctl disable ufw
         echo "ufw 已停用"
     elif systemctl is-active --quiet iptables; then
         systemctl stop iptables
