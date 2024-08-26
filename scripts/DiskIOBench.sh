@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# code by songdaoyuan@20240826
+
+# 工作原理
+# 1.从 Gitee 拉取 fio 程序 -> 2.顺序和4K读写测试 -> 3.导出测试结果
+
+# 使用方式
+# 使用管理员账号或者管理员权限使用此脚本
+
+# ToDo 增加多线程、循环测试取平均值 功能
+
 GlobalVar_BaseDir="."
 
 Font_Red="\033[31m"
@@ -9,12 +19,11 @@ Font_SkyBlue="\033[36m"
 
 Msg_Error="${Font_Red}[ERROR]${Font_Suffix}"
 
-# ===========================================================================
-# -> 磁盘性能测试模块 (Entrypoint) -> 执行
 function BenchFunc_PerformanceTest_Disk_RunTest() {
     BenchFunc_PerformanceTest_Disk_RunTest_FIO
 }
-# -> 磁盘性能测试 (Executor) -> 执行核心代码 "${GlobalVar_BaseDir}"fio 定位fio路径
+
+# ${GlobalVar_BaseDir}"/fio 修改此代码以编辑fio执行文件的路径
 function BenchExec_FIO() {
     if [ "$1" == "read" ] || [ "$1" == "randread" ]; then
         local rr && rr="$("${GlobalVar_BaseDir}"/fio -ioengine=libaio -rw="$1" -bs="$2" -size="$3" -direct=1 -iodepth="$4" -runtime="$5" -name="$6" --minimal)"
@@ -39,7 +48,7 @@ function BenchExec_FIO() {
     echo -n "$r"
     rm -f "$6.0.0"
 }
-# -> 磁盘性能测试 (Collector) -> 运行测试
+
 function BenchFunc_PerformanceTest_Disk_RunTest_FIO() {
     echo -e "\n ${Font_Yellow}-> Disk Performance Test (Using FIO, Direct mode, 32 IO-Depth)${Font_Suffix}\n"
     mkdir -p "${GlobalVar_BaseDir}/tmp" >/dev/null 2>&1
@@ -54,7 +63,7 @@ function BenchFunc_PerformanceTest_Disk_RunTest_FIO() {
     local sw1m_q8t1 && sw1m_q8t1="$(BenchExec_FIO "write" "1m" "1g" "8" "60" "${GlobalVar_BaseDir}/tmp/TestFile.bin")"
     echo -n -e "\r ${Font_Yellow}Sequential Write Test (1M-Block, QD=8, 1 Thread):${Font_Suffix}\t${Font_SkyBlue}$sw1m_q8t1${Font_Suffix}\n"
     Result_PerformanceTest_Disk_1MSeqWrite_Q8T1=" Sequential Write Test (1M-Block, QD=8, 1 Thread):\t$sw1m_q8t1"
-    
+
     # 随机读 RND4K Q32T1
     echo -n -e " ${Font_Yellow}Read Test (4K-Block, QD=32, 1 Thread):${Font_Suffix}\t\t->\c"
     local rr4 && rr4="$(BenchExec_FIO "randread" "4k" "1g" "32" "60" "${GlobalVar_BaseDir}/tmp/TestFile.bin")"
@@ -65,13 +74,13 @@ function BenchFunc_PerformanceTest_Disk_RunTest_FIO() {
     local rw4 && rw4="$(BenchExec_FIO "randwrite" "4k" "1g" "32" "60" "${GlobalVar_BaseDir}/tmp/TestFile.bin")"
     echo -n -e "\r ${Font_Yellow}Write Test (4K-Block, QD=32, 1 Thread):${Font_Suffix}\t\t${Font_SkyBlue}$rw4${Font_Suffix}\n"
     Result_PerformanceTest_Disk_4KRandWrite_Q32T1=" Random Write Test (4K-Block, QD=32, 1 Thread):\t\t$rw4"
-    
+
     # 随机读 128K
     # echo -n -e " ${Font_Yellow}Read Test (128K-Block):${Font_Suffix}\t->\c"
     # local rr128 && rr128="$(BenchExec_FIO "randread" "128k" "100m" "32" "60" "${GlobalVar_BaseDir}/tmp/TestFile.bin")"
     # echo -n -e "\r ${Font_Yellow}Read  Test (128K-Block):${Font_Suffix}\t${Font_SkyBlue}$rr128${Font_Suffix}\n"
     # Result_PerformanceTest_Disk_128KRandRead=" Random Read  Test (128K-Block):\t$rr128"
-    
+
     # 随机写 128K
     # echo -n -e " ${Font_Yellow}Write Test (128K-Block):${Font_Suffix}\t->\c"
     # local rw128 && rw128="$(BenchExec_FIO "randwrite" "128k" "100m" "32" "60" "${GlobalVar_BaseDir}/tmp/TestFile.bin")"
