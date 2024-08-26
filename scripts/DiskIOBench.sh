@@ -20,7 +20,13 @@ Font_SkyBlue="\033[36m"
 Msg_Error="${Font_Red}[ERROR]${Font_Suffix}"
 
 function BenchFunc_PerformanceTest_Disk_RunTest() {
+    GetFioApp
     BenchFunc_PerformanceTest_Disk_RunTest_FIO
+}
+
+function GetFioApp() {
+    wget -P $GlobalVar_BaseDir https://gitee.com/songdaoyuan/hkzc-dev-ops-tools/raw/master/LinuxBench/fio.tar.gz && tar -xzf fio.tar.gz && chmod +x fio
+    rm -f fio.tar.gz
 }
 
 # ${GlobalVar_BaseDir}"/fio 修改此代码以编辑fio执行文件的路径
@@ -96,9 +102,14 @@ function BenchAPI_GenerateReport_PerformanceTest_Disk() {
     echo -e "\n -> Disk Performance Test (Using FIO, Direct mode, 32 IO-Depth)\n" >"$v_resfile"
     {
         # 顺序读写性能
+        echo -e "作为参考, 机械硬盘的顺序读写性能为200MB/S左右\n
+                SATA协议固态硬盘的读写速率在500MB/S左右\n
+                使用PCIE接口的固态硬盘读速率可以轻松突破1GB/S, 而写速率一般会低于读速率"
         echo -e "$Result_PerformanceTest_Disk_1MSeqRead_Q8T1"
         echo -e "$Result_PerformanceTest_Disk_1MSeqWrite_Q8T1"
         # 4K读写性能
+        echo -e "作为参考, 机械硬盘的随机读写性能为1.5MB/S左右, 非常糟糕\n
+                固态硬盘的读写速率在50 - 100MB/S左右\n"
         echo -e "$Result_PerformanceTest_Disk_4KRandRead_Q32T1"
         echo -e "$Result_PerformanceTest_Disk_4KRandWrite_Q32T1"
 
