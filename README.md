@@ -6,7 +6,9 @@
 
 ## 脚本列表和说明
 
+* DiskIOBench.sh
 * GetAvailableK8sNodePorts.sh
 * InstallDocker.sh
 * LemonBench.sh
 * OSInit.sh
+* rdocker.sh
