@@ -103,13 +103,13 @@ function BenchAPI_GenerateReport_PerformanceTest_Disk() {
     {
         # 顺序读写性能
         echo -e "作为参考, 机械硬盘的顺序读写性能为200MB/S左右
-        SATA协议固态硬盘的读写速率在500MB/S左右
-        使用PCIE接口的固态硬盘读速率可以轻松突破1GB/S, 而写速率一般会低于读速率\n"
+SATA协议固态硬盘的读写速率在500MB/S左右
+使用PCIE接口的固态硬盘读速率可以轻松突破1GB/S, 而写速率一般会低于读速率\n"
         echo -e "$Result_PerformanceTest_Disk_1MSeqRead_Q8T1"
         echo -e "$Result_PerformanceTest_Disk_1MSeqWrite_Q8T1"
         # 4K读写性能
         echo -e "作为参考, 机械硬盘的随机读写性能为1.5MB/S左右, 非常糟糕
-        固态硬盘的读写速率在50 - 100MB/S左右\n"
+固态硬盘的读写速率在50 - 100MB/S左右\n"
         echo -e "$Result_PerformanceTest_Disk_4KRandRead_Q32T1"
         echo -e "$Result_PerformanceTest_Disk_4KRandWrite_Q32T1"
 
