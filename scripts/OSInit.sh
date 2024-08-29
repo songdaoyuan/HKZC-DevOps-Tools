@@ -192,7 +192,7 @@ RH_config_static_ip() {
     echo "DNS2=$DNS2" >>$CONFIG_FILE
 
     # 重启网络服务
-    systemctl restart network
+    systemctl restart NetworkManager
 }
 
 #*********************** 适用于 Debain 系发行版的函数
