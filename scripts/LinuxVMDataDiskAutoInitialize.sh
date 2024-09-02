@@ -1,4 +1,8 @@
 #!/bin/bash
+# code by huawei
+# 20240902 V1.0
+# 用于初始化RH系Linux的数据盘
+
 
 export PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
 clear
