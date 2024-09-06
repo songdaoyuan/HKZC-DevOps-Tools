@@ -6,6 +6,8 @@
 # 所有需要通过*.docker.*下载的文件均已备份在gitee或者使用TUNA源, 便于未配置代理的服务器上使用
 #TODO wget拉取完成大文件应当增加CRC校验
 
+# 增加一个安装wget
+
 echo "必须以root用户或者使用sudo权限来运行此脚本, 如果你之前安装过其他版本的Docker或者组件, 脚本会执行清理"
 
 os_name=$(hostnamectl | grep 'Operating System' | awk '{print $3}')
