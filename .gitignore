@@ -1,0 +1,2 @@
+# 添加对虚拟环境的.gitignore支持
+venv
