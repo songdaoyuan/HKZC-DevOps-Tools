@@ -26,6 +26,9 @@ async def read_root():
 async def read_item(item_id: int, q: Union[str, None] = None):
     return {"item_id": item_id, "q": q}
 
+@app.post("/delete/{dir}")
+async def delete_dir(dir: str):
+    return
 
 if __name__ == "__main__":
     uvicorn.run(app=app, host="127.0.0.1", port=80, reload=True)
