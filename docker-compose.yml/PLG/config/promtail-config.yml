@@ -1,0 +1,26 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push  # Promtail sends log entries to Loki using this URL
+
+scrape_configs:
+  # - job_name: system
+  #   static_configs:
+  #     - targets:
+  #         - localhost
+  #       labels:
+  #         job: varlogs
+  #         __path__: /var/log/*.log
+  # 配置数据源 - java应用程序日志目录
+  - job_name: focusin-prod-logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: focusin-prod-logs
+          __path__: /var/log/focusin-log/prod/**/*.log  # 配置要抓取的日志文件路径
