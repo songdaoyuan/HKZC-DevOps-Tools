@@ -7,7 +7,10 @@ services:
     container_name: loki
     ports:
       - "3100:3100"
-    command: -config.file=/mnt/config/loki-config.yaml
+    # 如果需要使用宿主机的配置文件, 配置这里, 和映射文件的配置二选一
+    # command:
+    #   - "-config.expand-env=true"
+    #   - "-config.file=/mnt/config/loki-config.yaml"
     volumes:
       - ./config/loki-config.yaml:/mnt/config/loki-config.yaml
     networks:
@@ -19,7 +22,8 @@ services:
     volumes:
       - /var/log:/var/log # 将主机的日志目录挂载到 promtail 容器中
       - ./config/promtail-config.yaml:/mnt/config/promtail-config.yaml
-    command: -config.file=/mnt/config/promtail-config.yaml
+    networks:
+      - docker-network
     depends_on:
       - loki
 
