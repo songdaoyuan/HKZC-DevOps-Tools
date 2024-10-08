@@ -40,6 +40,8 @@ services:
 
 volumes:
   grafana-data:
+    driver: local
 
 networks:
-  - docker-network
+  docker-network:
+    external: true
