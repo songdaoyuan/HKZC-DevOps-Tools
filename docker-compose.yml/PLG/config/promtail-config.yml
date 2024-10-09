@@ -23,4 +23,6 @@ scrape_configs:
           - localhost
         labels:
           job: focusin-prod-logs
+          host: ${HOSTNAME} # 增加主机名标签, 便于区分不同promtail节点的日志
+          # instance: {{ .Environment.HOSTNAME }} 或者使用这个实例名标签
           __path__: /var/log/focusin-log/prod/**/*.log  # 配置要抓取的日志文件路径
