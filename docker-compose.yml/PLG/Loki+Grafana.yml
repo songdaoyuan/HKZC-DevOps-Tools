@@ -1,0 +1,39 @@
+# 部署Loki+Grafana的日志服务器, promtail分布式部署在不同节点
+version: "3"
+
+services:
+  loki:
+    image: harbor.hysz.co/basics/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    # 如果需要使用宿主机的配置文件, 配置这里, 和映射文件的配置二选一
+    # command:
+    #   - "-config.expand-env=true"
+    #   - "-config.file=/mnt/config/loki-config.yaml"
+    volumes:
+      - ./config/loki-config.yaml:/etc/loki/local-config.yaml # 映射本地配置文件到容器中/etc/loki/local-config.yaml
+    networks:
+      - log-network
+
+  grafana:
+    image: harbor.hysz.co/basics/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=focusin@123#$
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - log-network
+    depends_on:
+      - loki
+
+volumes:
+  grafana-data:
+    driver: local
+
+networks:
+  log-network:

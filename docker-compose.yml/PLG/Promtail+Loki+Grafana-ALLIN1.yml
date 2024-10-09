@@ -1,4 +1,5 @@
-# 部署Promtail+Loki+Grafana的日志服务
+# 部署Promtail+Loki+Grafana的日志服务, 单节点部署完整的PLG
+# 修改本compose中promtail的日志挂载目录 & .config/promtail-config.yml中loki服务器的IP:PORT
 version: "3"
 
 services:

@@ -1,0 +1,17 @@
+# 适用于分布式部署的promtail配置文件
+# 修改本compose中promtail的日志挂载目录 & .config/promtail-config.yml中loki服务器的IP:PORT
+version: "3"
+
+services:
+  promtail:
+    image: harbor.hysz.co/basics/promtail:latest
+    container_name: promtail
+    volumes:
+      - /var/log:/var/log # 将主机的日志目录挂载到 promtail 容器中
+      - /data/logs/focusin-log:/var/log/focusin-log # 挂载额外的日志目录
+      - ./config/promtail-config.yml:/etc/promtail/config.yml # 映射本地配置文件到容器中/etc/promtail/config.yml
+    networks:
+      - promtail-network
+
+networks:
+  promtail-network:
