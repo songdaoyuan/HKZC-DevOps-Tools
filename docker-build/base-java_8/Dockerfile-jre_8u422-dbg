@@ -1,0 +1,18 @@
+# dbg镜像构建
+FROM harbor.hysz.co/basics/eclipse-temurin:8u422-b05-jre-jammy
+
+LABEL org.opencontainers.image.authors="songdaoyuan@focus-in.cn"
+
+ENV TZ=Asia/Shanghai
+
+RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && echo $TZ > /etc/timezone
+
+WORKDIR /project
+
+ENV project="prod"
+
+COPY spring-helloworld-demo.jar demo.jar
+
+CMD java -server -Xms1g -Xmx2g -Dserver.port=48085 -jar demo.jar 
+
+EXPOSE 48085

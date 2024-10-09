@@ -25,11 +25,11 @@ jammy是ubuntu版本代号, 对应2204, 还有noble(2404), ubi9-minimal(RH9)...�
 构建两种类型的镜像
 
 * prod
-* dbg-prod
+* dbg
 
-两种镜像均适用于生产环境:
+两种镜像均可于生产环境:
 prod镜像为精简的jre镜像, 适用于对性能有需求的生产环境, 提供最精简的镜像打包
-dgb-prod镜像在精简jre镜像中添加了便于调试的工具包(tcping.sh \ nc、btop、vim)和Java性能追踪工具skywalking
+dgb镜像在精简jre镜像中添加了便于调试的工具包(tcping.sh \ nc、btop、vim)和性能追踪工具skywalking
 
 同步构建amd64和arm64/v8双版本镜像
 
