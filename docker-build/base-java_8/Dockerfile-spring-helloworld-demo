@@ -25,7 +25,7 @@ COPY spring-helloworld-demo.jar app.jar
 
 # 使用 skywalking 的启动命令
 CMD ["java",\
-    "-javaagent:/skywalking-agent-8.11.0/skywalking-agent.jar",\
+    "-javaagent:/skywalking-agent/skywalking-agent.jar",\
     "-Dskywalking.agent.service_name=$ENV-$JOB_NAME",\
     "-server","-Xms1g","-Xmx2g",\
     "-Dserver.port=8080",\

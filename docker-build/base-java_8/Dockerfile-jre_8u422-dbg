@@ -1,21 +1,22 @@
 # 构建 jre_8u422-dbg
 # 默认已包含 curl wget fontconfig ca-certificates p11-kit tzdata locales
-# 默认语言和字符编码为
+# 默认语言和字符编码为 ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
 # 可选变更为 ENV LANG=zh_CN.UTF-8 LANGUAGE=zh_CN.UTF-8
+
 FROM harbor.hysz.co/basics/eclipse-temurin:8u422-b05-jre-jammy
 
 LABEL org.opencontainers.image.authors="songdaoyuan@focus-in.cn"
 
-# apt 安装工具包(netacat \ btop \ vim)
-# 使用 DEBIAN_FRONTEND=noninteractive 禁用任何交互式提示
+# apt 安装工具包(netcat \ btop \ vim \ tcpdump \ unzip)
 
+# 使用 DEBIAN_FRONTEND=noninteractive 禁用任何交互式提示
 RUN set -eux; \
     apt-get update; \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends netcat btop vim tcpdump; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends netcat btop vim tcpdump unzip; \
     rm -rf /var/lib/apt/lists/*
 
-# 添加 skywalking-agent
-COPY skywalking-agent-8.11.0/ /
+# 复制 skywalking-agent-8.11.0 中所有文件到 /skywalking-agent 
+COPY skywalking-agent-8.11.0/ /skywalking-agent
 
-# 添加 DevOps 脚本
-COPY scripts/ /
+# 复制 scripts 文件夹到 / 
+COPY --chmod=755 scripts /
