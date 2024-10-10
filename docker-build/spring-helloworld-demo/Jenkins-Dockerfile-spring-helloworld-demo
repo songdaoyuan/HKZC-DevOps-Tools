@@ -1,6 +1,6 @@
-# 基于 jre_8u422-dbg 的 spring-java应用 镜像构建模板, 使用前需要配置环境变量
+# 基于 jre_8u422-dbg 的 spring-java应用 镜像构建模板, 适用于dev-jenkins自动化构建
 # ENV JOB_NAME
-FROM harbor.hysz.co/basics/jre_8u422-dbg:latest
+FROM dev-harbor.hysz.co/basics/jre_8u422-dbg:latest
 
 LABEL org.opencontainers.image.authors="songdaoyuan@focus-in.cn"
 
@@ -24,6 +24,10 @@ COPY spring-helloworld-demo.jar app.jar
 # CMD java -server -Xms1g -Xmx2g -Dserver.port=8080 -jar app.jar
 
 # 使用 skywalking 的启动命令
+# "-Dskywalking.collector.backend_service=192.168.6.46:11800" 覆盖collector的地址
+# dev-skywalking: 192.168.6.46:11800
+# skywalking(ali-k8s): 172.20.3.192:11800
+
 CMD ["java",\
     "-javaagent:/skywalking-agent/skywalking-agent.jar",\
     "-Dskywalking.agent.service_name=$ENV-$JOB_NAME",\

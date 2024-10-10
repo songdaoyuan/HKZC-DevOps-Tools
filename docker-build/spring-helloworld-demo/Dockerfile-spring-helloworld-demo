@@ -1,0 +1,42 @@
+# 基于 jre_8u422-dbg 的 spring-java应用 镜像构建模板
+
+FROM dev-harbor.hysz.co/basics/jre_8u422-dbg:latest
+
+LABEL org.opencontainers.image.authors="songdaoyuan@focus-in.cn"
+
+# 调整时区
+
+ENV TZ=Asia/Shanghai
+
+RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && echo $TZ > /etc/timezone
+
+# 默认工作路径为 /project , 沿用旧版镜像构建配置
+
+WORKDIR /project
+
+# 镜像运行环境 dev \ test \ uat \ prod 四种可选, 默认 dev
+
+ENV project=dev
+
+COPY spring-helloworld-demo.jar app.jar
+
+# 不使用 skywalking 的启动命令
+# CMD java -server -Xms1g -Xmx2g -Dserver.port=8080 -jar app.jar --spring.profiles.active=dev
+
+# 使用 skywalking 的启动命令
+# "-Dskywalking.collector.backend_service=192.168.6.46:11800" 覆盖collector的地址
+# dev-skywalking: 192.168.6.46:11800
+# skywalking(ali-k8s): 172.20.3.192:11800
+
+CMD ["java",\
+    "-javaagent:/skywalking-agent/skywalking-agent.jar",\
+    "-Dskywalking.agent.service_name=dev-spring-helloworld-demo",\
+    "-Dskywalking.collector.backend_service=192.168.6.46:11800",\
+    "-server","-Xms1g","-Xmx2g",\
+    "-Dserver.port=8080",\
+    "-jar",\
+    "/app.jar",\
+    "--spring.profiles.active=dev"\
+    ]
+
+EXPOSE 8080
