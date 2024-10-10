@@ -19,4 +19,4 @@ RUN set -eux; \
 COPY skywalking-agent-8.11.0/ /skywalking-agent
 
 # 复制 scripts 文件夹到 / 
-COPY --chmod=755 scripts /
+COPY --chmod=755 scripts/ /scripts
