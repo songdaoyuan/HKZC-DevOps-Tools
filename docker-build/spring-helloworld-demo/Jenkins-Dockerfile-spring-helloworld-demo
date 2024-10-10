@@ -34,7 +34,7 @@ CMD ["java",\
     "-server","-Xms1g","-Xmx2g",\
     "-Dserver.port=8080",\
     "-jar",\
-    "/app.jar",\
+    "app.jar",\
     "--spring.profiles.active=$ENV"\
     ]
 

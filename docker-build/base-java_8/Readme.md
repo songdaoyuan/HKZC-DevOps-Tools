@@ -10,6 +10,11 @@ openJDK官方镜像已于2022年停止维护, 各个版本的JDK镜像不再推�
 
 Eclipse Temurin 是一个由 Eclipse 基金会支持的高性能、可扩展的 Java 虚拟机（JVM）实现
 
+* 拥有改进的即时编译器 JIT 和垃圾收集器 GC , 提供高性能的 Java 执行环境
+* Eclipse Temurin 提供长期支持版本, 适合需要长期稳定运行的企业应用
+* 定期发布安全更新, 帮助保护企业应用免受安全威胁
+* 与 Java SE 标准保持高度兼容
+
 选择eclipse-temurin:8u422-b05-jre-jammy镜像, 镜像大小约80MB左右
 
 ```plaintext
