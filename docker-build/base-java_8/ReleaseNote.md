@@ -14,7 +14,7 @@ dev-harbor.hysz.co/basics/centos7.9_jdk8u301:v2 **681.36MiB**  构建于**2023/1
 
 1. 基础镜像版本陈旧, 缺乏安全和质量更新( alpine 和 CentOS )和可用软件源 (CentOS 7 已经停止维护)
 
-2. JAVA 版本陈旧, 缺乏安全和质量更新
+2. JAVA 版本( jdk8u301 )陈旧, 缺乏安全和质量更新
 
 3. 镜像体积庞大, 但是缺乏常用的调试工具, 调试工具难以通过软件源安装, 在无网络条件下非常难以排查问题
 
@@ -22,9 +22,9 @@ dev-harbor.hysz.co/basics/centos7.9_jdk8u301:v2 **681.36MiB**  构建于**2023/1
 
 ## 构建特点
 
-### 1.Java 虚拟机
+### 1.高性能且提供长期支持的 Java 虚拟机
 
-Java虚拟机使用了Eclipse Temurin, 是一个由 Eclipse 基金会支持的高性能、可扩展的 Java 虚拟机（JVM）实现
+Java虚拟机使用了Eclipse Temurin, 是一个由 Eclipse 基金会支持的高性能、可扩展的 Java 虚拟机( JVM )实现
 
 * 拥有改进的即时编译器 JIT 和垃圾收集器 GC , 提供高性能的 Java 执行环境
 
@@ -53,6 +53,8 @@ Java虚拟机使用了Eclipse Temurin, 是一个由 Eclipse 基金会支持的�
 * btop 现代化的系统监控工具
 
 * vim 文件编辑器
+
+如果还需要其他工具, 基础镜像 Ubuntu 2204 LTS 提供海量的APT软件源
 
 ### 4.自定义的DevOps脚本支持
 
