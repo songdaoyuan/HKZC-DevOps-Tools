@@ -1,18 +1,15 @@
-# dbg镜像构建
+# 构建 jre_8u422-dbg
+# 默认已包含 curl wget fontconfig ca-certificates p11-kit tzdata locales
+# 默认语言和字符编码为
+# 可选变更为 ENV LANG=zh_CN.UTF-8 LANGUAGE=zh_CN.UTF-8
 FROM harbor.hysz.co/basics/eclipse-temurin:8u422-b05-jre-jammy
 
 LABEL org.opencontainers.image.authors="songdaoyuan@focus-in.cn"
 
-ENV TZ=Asia/Shanghai
+# apt 安装工具包(netacat \ btop \ vim)
+# 使用 DEBIAN_FRONTEND=noninteractive 禁用任何交互式提示
 
-RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && echo $TZ > /etc/timezone
-
-WORKDIR /project
-
-ENV project="prod"
-
-COPY spring-helloworld-demo.jar demo.jar
-
-CMD java -server -Xms1g -Xmx2g -Dserver.port=48085 -jar demo.jar 
-
-EXPOSE 48085
+RUN set -eux; \
+    apt-get update; \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends netcat btop vim; \
+    rm -rf /var/lib/apt/lists/*

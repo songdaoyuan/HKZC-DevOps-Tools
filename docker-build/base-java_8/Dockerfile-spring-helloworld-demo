@@ -1,0 +1,24 @@
+# 基于 jre_8u422-dbg 的 spring-java应用 镜像构建模板
+FROM harbor.hysz.co/basics/jre_8u422-dbg:v1
+
+LABEL org.opencontainers.image.authors="songdaoyuan@focus-in.cn"
+
+# 调整时区
+
+ENV TZ=Asia/Shanghai
+
+RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && echo $TZ > /etc/timezone
+
+# 默认工作路径为 /project , 沿用旧版镜像构建配置
+
+WORKDIR /project
+
+# 镜像运行环境 dev \ test \ uat \ prod 四种可选, 默认 prod
+
+ENV project="prod"
+
+COPY spring-helloworld-demo.jar demo.jar
+
+CMD java -server -Xms1g -Xmx2g -Dserver.port=48085 -jar demo.jar 
+
+EXPOSE 8080
