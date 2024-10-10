@@ -1,5 +1,6 @@
-# 基于 jre_8u422-dbg 的 spring-java应用 镜像构建模板
-FROM harbor.hysz.co/basics/jre_8u422-dbg:v1
+# 基于 jre_8u422-dbg 的 spring-java应用 镜像构建模板, 使用前需要配置环境变量
+# ENV JOB_NAME
+FROM harbor.hysz.co/basics/jre_8u422-dbg:latest
 
 LABEL org.opencontainers.image.authors="songdaoyuan@focus-in.cn"
 
@@ -15,10 +16,22 @@ WORKDIR /project
 
 # 镜像运行环境 dev \ test \ uat \ prod 四种可选, 默认 prod
 
-ENV project="prod"
+ENV project=$ENV
 
-COPY spring-helloworld-demo.jar demo.jar
+COPY spring-helloworld-demo.jar app.jar
 
-CMD java -server -Xms1g -Xmx2g -Dserver.port=48085 -jar demo.jar 
+# 不使用 skywalking 的启动命令
+# CMD java -server -Xms1g -Xmx2g -Dserver.port=8080 -jar app.jar
+
+# 使用 skywalking 的启动命令
+CMD ["java",\
+    "-javaagent:/skywalking-agent-8.11.0/skywalking-agent.jar",\
+    "-Dskywalking.agent.service_name=$ENV-$JOB_NAME",\
+    "-server","-Xms1g","-Xmx2g",\
+    "-Dserver.port=8080",\
+    "-jar",\
+    "/app.jar",\
+    "--spring.profiles.active=$ENV"\
+    ]
 
 EXPOSE 8080
