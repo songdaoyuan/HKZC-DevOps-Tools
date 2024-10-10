@@ -1,0 +1,16 @@
+version: "2"
+services:
+  jre_8u422-spring-helloworld-demo:
+    image: jre_8u422-spring-helloworld-demo:v1
+    container_name: jre_8u422-spring-helloworld-demo
+    restart: always
+    ports:
+      - "8848:8080"
+    # volumes:
+    #   - "/var/logs/focusin-log/test:/var/logs/focusin/"
+    # networks:
+    #   - docker-network
+
+# networks:
+#   docker-network:
+#     external: true
