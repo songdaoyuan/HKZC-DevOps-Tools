@@ -2,4 +2,5 @@
 .DS_Store
 venv
 # 忽略构建镜像过程中的第三方软件包
-skywalking-agent-8.11.0
+docker-build/base-java_8/skywalking-agent-8.11.0
+docker-build/base-java_8/scripts

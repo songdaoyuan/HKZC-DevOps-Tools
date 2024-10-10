@@ -13,3 +13,9 @@ RUN set -eux; \
     apt-get update; \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends netcat btop vim; \
     rm -rf /var/lib/apt/lists/*
+
+# 添加 skywalking-agent
+COPY skywalking-agent-8.11.0/ /
+
+# 添加 DevOps 脚本
+COPY scripts/ /
