@@ -6,7 +6,7 @@ LABEL org.opencontainers.image.authors="songdaoyuan@focus-in.cn"
 # 调整时区
 ENV TZ=Asia/Shanghai
 
-RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && echo $TZ > /etc/timezone
+RUN ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo Asia/Shanghai > /etc/timezone && echo Asia/Shanghai > /etc/timezone
 
 # 默认工作路径为 /project , 沿用旧版镜像构建配置
 WORKDIR /project
@@ -29,7 +29,7 @@ CMD ["java",\
     "-server","-Xms1g","-Xmx2g",\
     "-Dserver.port=48085",\
     "-jar",\
-    "app.jar",\
+    "$JOB_NAME.jar",\
     "--spring.profiles.active=$env"\
     ]
 
