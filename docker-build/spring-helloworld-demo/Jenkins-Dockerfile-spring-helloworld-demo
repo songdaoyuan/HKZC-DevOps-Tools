@@ -1,27 +1,22 @@
-# 基于 jre_8u422-dbg 的 spring-java应用 镜像构建模板, 适用于dev-jenkins自动化构建
-# ENV JOB_NAME
+# 基于 jre_8u422-dbg 的 spring-java应用 镜像构建模板, 适用于 jenkins 自动化构建
 FROM dev-harbor.hysz.co/basics/jre_8u422-dbg:latest
 
 LABEL org.opencontainers.image.authors="songdaoyuan@focus-in.cn"
 
 # 调整时区
-
 ENV TZ=Asia/Shanghai
 
 RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && echo $TZ > /etc/timezone
 
 # 默认工作路径为 /project , 沿用旧版镜像构建配置
-
 WORKDIR /project
 
-# 镜像运行环境 dev \ test \ uat \ prod 四种可选, 默认 prod
-
-ENV project=$ENV
-
-COPY spring-helloworld-demo.jar app.jar
+# 镜像运行环境$env( dev \ test \ uat \ prod 四种可选, 默认 dev )
+# $target 指向 Jenkins 构建完成的 jar 包路径
+COPY $target $JOB_NAME.jar
 
 # 不使用 skywalking 的启动命令
-# CMD java -server -Xms1g -Xmx2g -Dserver.port=8080 -jar app.jar
+# CMD java -server -Xms1g -Xmx2g -Dserver.port=48085 -jar app.jar
 
 # 使用 skywalking 的启动命令
 # "-Dskywalking.collector.backend_service=192.168.6.46:11800" 覆盖collector的地址
@@ -30,12 +25,12 @@ COPY spring-helloworld-demo.jar app.jar
 
 CMD ["java",\
     "-javaagent:/skywalking-agent/skywalking-agent.jar",\
-    "-Dskywalking.agent.service_name=$ENV-$JOB_NAME",\
+    "-Dskywalking.agent.service_name=$env-$JOB_NAME",\
     "-server","-Xms1g","-Xmx2g",\
-    "-Dserver.port=8080",\
+    "-Dserver.port=48085",\
     "-jar",\
     "app.jar",\
-    "--spring.profiles.active=$ENV"\
+    "--spring.profiles.active=$env"\
     ]
 
-EXPOSE 8080
+EXPOSE 48085
