@@ -16,7 +16,7 @@ WORKDIR /project
 COPY $target $JOB_NAME.jar
 
 # 不使用 skywalking 的启动命令
-# CMD java -server -Xms1g -Xmx2g -Dserver.port=48085 -jar app.jar
+# CMD java -server -Xms1g -Xmx2g -Dserver.port=8080 -jar app.jar
 
 # 使用 skywalking 的启动命令
 # "-Dskywalking.collector.backend_service=192.168.6.46:11800" 覆盖collector的地址
@@ -27,10 +27,10 @@ CMD ["java",\
     "-javaagent:/skywalking-agent/skywalking-agent.jar",\
     "-Dskywalking.agent.service_name=$env-$JOB_NAME",\
     "-server","-Xms1g","-Xmx2g",\
-    "-Dserver.port=48085",\
+    "-Dserver.port=8080",\
     "-jar",\
     "$JOB_NAME.jar",\
     "--spring.profiles.active=$env"\
     ]
 
-EXPOSE 48085
+EXPOSE 8080
