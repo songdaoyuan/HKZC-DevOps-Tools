@@ -1,8 +1,15 @@
-# 添加对虚拟环境的.gitignore支持
-.DS_Store
-venv
 # 忽略构建镜像过程中的第三方软件包
 docker-build/base-java_8/skywalking-agent-8.11.0
 docker-build/base-java_8/scripts
+
 # 忽略压缩包
 *.zip
+
+# Environments
+.env
+env/
+ENV/
+venv
+
+# thx Apple
+.DS_Store
