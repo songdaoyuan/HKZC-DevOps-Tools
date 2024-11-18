@@ -23,3 +23,4 @@
 * OSInit.sh
 * rdocker.sh
 * tcping.sh
+* rpull.sh | 一个借助代理服务器拉取docker image的脚本
