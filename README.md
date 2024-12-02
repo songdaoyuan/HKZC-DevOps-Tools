@@ -24,3 +24,4 @@
 * rdocker.sh
 * tcping.sh
 * rpull.sh | 一个借助代理服务器拉取docker image的脚本
+* mysql_backup.sh | 一个结合crontab计划任务使用mysqldump进行数据库备份的脚本
