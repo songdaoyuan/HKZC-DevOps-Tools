@@ -3,11 +3,14 @@ from aliyunsdkalidns.request.v20150109.DescribeDomainRecordsRequest import Descr
 from aliyunsdkalidns.request.v20150109.UpdateDomainRecordRequest import UpdateDomainRecordRequest
 from aliyunsdkalidns.request.v20150109.AddDomainRecordRequest import AddDomainRecordRequest
 import json
-
+import os
 '''
 在开始之前, 需要安装依赖
 aliyun-python-sdk-core-v3 aliyun-python-sdk-alidns
 '''
+
+from dotenv import load_dotenv, find_dotenv
+_ = load_dotenv(find_dotenv(".env"))
 
 class AliyunDNS:
     def __init__(self, access_key_id, access_key_secret, domain_name):
@@ -66,9 +69,9 @@ class AliyunDNS:
 
 def main():
     # 配置阿里云访问密钥和域名
-    ACCESS_KEY_ID = "your_access_key_id"
-    ACCESS_KEY_SECRET = "your_access_key_secret"
-    DOMAIN_NAME = "example.com"
+    ACCESS_KEY_ID = os.environ["ACCESS_KEY_ID"]
+    ACCESS_KEY_SECRET = os.environ["ACCESS_KEY_SECRET"]
+    DOMAIN_NAME = os.environ["DOMAIN_NAME"]
 
     # 创建DNS操作实例
     dns = AliyunDNS(ACCESS_KEY_ID, ACCESS_KEY_SECRET, DOMAIN_NAME)
