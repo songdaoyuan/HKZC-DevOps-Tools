@@ -8,6 +8,9 @@ from aliyunsdkalidns.request.v20150109.UpdateDomainRecordRequest import (
 from aliyunsdkalidns.request.v20150109.AddDomainRecordRequest import (
     AddDomainRecordRequest,
 )
+
+import pandas as pd
+
 import json
 import os
 import time
@@ -25,7 +28,9 @@ _ = load_dotenv(find_dotenv(".env"))
 
 
 class AliyunDNS:
-    def __init__(self, access_key_id, access_key_secret, domain_name, cache_file="log.json"):
+    def __init__(
+        self, access_key_id, access_key_secret, domain_name, cache_file="log.json"
+    ):
         self.client = AcsClient(access_key_id, access_key_secret, "cn-hangzhou")
         self.domain_name = domain_name
         self.cache_file = cache_file
@@ -76,7 +81,7 @@ class AliyunDNS:
             print("使用本地缓存的解析记录")
             return self._load_cache()
 
-        print("缓存无效，调用阿里云API获取解析记录")
+        print("缓存无效, 调用阿里云API获取解析记录")
 
         request = DescribeDomainRecordsRequest()
         request.set_accept_format("json")
@@ -164,34 +169,54 @@ def main():
     # 创建DNS操作实例
     dns = AliyunDNS(ACCESS_KEY_ID, ACCESS_KEY_SECRET, DOMAIN_NAME)
 
-    # 要批量修改的记录列表
-    records_to_update = [{"rr": "devops", "type": "A", "value": "192.168.6.21"}]
+    # 读取Excel文件
+    try:
+        # 假设Excel文件名为dev_dns_records.xlsx, 根据实际情况修改
+        df = pd.read_excel("dev_dns_records.xlsx")
 
-    # 获取现有解析记录
-    existing_records = dns.get_domain_records()
+        # 构建需要更新的记录列表
+        records_to_update = []
+        for _, row in df.iterrows():
+            # 只处理状态为"启用"的记录
+            if row["状态(暂停/启用)"] == "启用":
+                record = {
+                    "rr": row["主机记录"],
+                    "type": row["记录类型"],
+                    "value": "192.168.6.216",  # 统一修改为新IP
+                }
+                records_to_update.append(record)
 
-    # 遍历要更新的记录
-    for new_record in records_to_update:
-        record_found = False
+        # 获取现有解析记录
+        existing_records = dns.get_domain_records()
 
-        # 检查是否存在相同主机记录
-        for existing_record in existing_records:
-            if existing_record["RR"] == new_record["rr"]:
-                record_found = True
-                # 如果记录已存在,则更新
-                dns.update_domain_record(
-                    existing_record["RecordId"],
-                    new_record["rr"],
-                    new_record["type"],
-                    new_record["value"],
+        # 遍历要更新的记录
+        for new_record in records_to_update:
+            record_found = False
+            print(f"正在处理记录: {new_record['rr']}")
+
+            # 检查是否存在相同主机记录
+            for existing_record in existing_records:
+                if existing_record["RR"] == new_record["rr"]:
+                    record_found = True
+                    print(f"找到现有记录, 准备更新: {new_record['rr']}")
+                    # 如果记录已存在,则更新
+                    dns.update_domain_record(
+                        existing_record["RecordId"],
+                        new_record["rr"],
+                        new_record["type"],
+                        new_record["value"],
+                    )
+                    break
+
+            # 如果记录不存在,则添加新记录
+            if not record_found:
+                print(f"未找到现有记录, 准备添加: {new_record['rr']}")
+                dns.add_domain_record(
+                    new_record["rr"], new_record["type"], new_record["value"]
                 )
-                break
 
-        # 如果记录不存在,则添加新记录
-        if not record_found:
-            dns.add_domain_record(
-                new_record["rr"], new_record["type"], new_record["value"]
-            )
+    except Exception as e:
+        print(f"处理Excel文件时出错: {str(e)}")
 
 
 if __name__ == "__main__":

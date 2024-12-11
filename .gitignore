@@ -16,3 +16,4 @@ venv
 
 # EditAliDNS.py
 log.json
+*.xlsx
