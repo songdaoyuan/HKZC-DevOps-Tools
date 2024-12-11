@@ -102,8 +102,8 @@ class AliyunDNS:
             request.set_PageNumber(page_number)
             request.set_PageSize(page_size)
 
-            # 降速
-            time.sleep(1)
+            # 控制API的调用速度
+            time.sleep(0.5)
 
             try:
                 response = self.client.do_action_with_exception(request)
