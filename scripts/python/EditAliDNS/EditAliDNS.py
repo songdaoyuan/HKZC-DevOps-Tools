@@ -18,8 +18,15 @@ import time
 from datetime import datetime, timedelta
 
 """
+code by songdaoyuan@2024.12.11
+
+通过读取阿里云格式的excel解析表格来批量修改域名的DNS解析
+pd.read_excel("dev_dns_records.xlsx")
+
 在开始之前, 需要安装依赖
-aliyun-python-sdk-core-v3 aliyun-python-sdk-alidns
+aliyun-python-sdk-core-v3, aliyun-python-sdk-alidns, pandas, openpyxl
+
+然后在.env文件中配置ACCESS_KEY_ID、ACCESS_KEY_SECRET、DOMAIN_NAME
 """
 
 from dotenv import load_dotenv, find_dotenv
@@ -171,7 +178,12 @@ def main():
 
     # 读取Excel文件
     try:
-        # 假设Excel文件名为dev_dns_records.xlsx, 根据实际情况修改
+        """
+        # 假设Excel文件名为dev_dns_records.xlsx, 根据实际情况修改, 表格格式如下:
+
+        记录类型	主机记录	解析线路	记录值	MX优先级	TTL值	状态(暂停/启用)	备注
+        A	dev-chengdu-game	默认	123.123.123.123		600	启用	公网
+        """
         df = pd.read_excel("dev_dns_records.xlsx")
 
         # 构建需要更新的记录列表
