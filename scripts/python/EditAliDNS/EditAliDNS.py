@@ -12,6 +12,8 @@ import json
 import os
 import time
 
+from datetime import datetime, timedelta
+
 """
 在开始之前, 需要安装依赖
 aliyun-python-sdk-core-v3 aliyun-python-sdk-alidns
@@ -23,12 +25,59 @@ _ = load_dotenv(find_dotenv(".env"))
 
 
 class AliyunDNS:
-    def __init__(self, access_key_id, access_key_secret, domain_name):
+    def __init__(self, access_key_id, access_key_secret, domain_name, cache_file="log.json"):
         self.client = AcsClient(access_key_id, access_key_secret, "cn-hangzhou")
         self.domain_name = domain_name
+        self.cache_file = cache_file
+
+    def _is_cache_valid(self):
+        """检查本地缓存文件是否存在且在一天内更新"""
+        if not os.path.exists(self.cache_file):
+            return False
+
+        try:
+            # 检查缓存文件的修改时间
+            file_mod_time = datetime.fromtimestamp(os.path.getmtime(self.cache_file))
+            if datetime.now() - file_mod_time > timedelta(days=1):  # 超过一天则无效
+                return False
+
+            # 检查缓存内容是否非空且格式正确
+            with open(self.cache_file, "r", encoding="UTF-8") as f:
+                data = json.load(f)
+                if data and isinstance(data, list):  # 确保内容是非空列表
+                    return True
+        except Exception as e:
+            print(f"检查缓存文件失败：{str(e)}")
+            return False
+
+        return False
+
+    def _load_cache(self):
+        """从本地缓存文件中读取记录"""
+        try:
+            with open(self.cache_file, "r", encoding="UTF-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"读取缓存文件失败：{str(e)}")
+            return []
+
+    def _save_cache(self, records):
+        """将解析记录保存到本地缓存文件"""
+        try:
+            with open(self.cache_file, "w", encoding="UTF-8") as f:
+                json.dump(records, f, ensure_ascii=False, indent=4)
+        except Exception as e:
+            print(f"保存缓存文件失败：{str(e)}")
 
     def get_domain_records(self):
-        """获取域名解析记录(支持分页获取所有记录)"""
+        """获取域名解析记录(支持分页获取所有记录, 支持读取缓存)"""
+        # 检查缓存是否有效
+        if self._is_cache_valid():
+            print("使用本地缓存的解析记录")
+            return self._load_cache()
+
+        print("缓存无效，调用阿里云API获取解析记录")
+
         request = DescribeDomainRecordsRequest()
         request.set_accept_format("json")
         request.set_DomainName(self.domain_name)
@@ -61,7 +110,11 @@ class AliyunDNS:
             except Exception as e:
                 print(f"获取解析记录失败：{str(e)}")
                 return []
+
         print(f"共获取到 {len(all_records)} 条解析记录")
+
+        # 保存到本地缓存
+        self._save_cache(all_records)
 
         return all_records
 
@@ -112,13 +165,10 @@ def main():
     dns = AliyunDNS(ACCESS_KEY_ID, ACCESS_KEY_SECRET, DOMAIN_NAME)
 
     # 要批量修改的记录列表
-    records_to_update = [{"rr": "devops", "type": "A", "value": "192.168.6.216"}]
+    records_to_update = [{"rr": "devops", "type": "A", "value": "192.168.6.21"}]
 
     # 获取现有解析记录
     existing_records = dns.get_domain_records()
-
-    with open("log.json", "w", encoding="UTF-8") as f:
-        f.write(str(existing_records))
 
     # 遍历要更新的记录
     for new_record in records_to_update:
