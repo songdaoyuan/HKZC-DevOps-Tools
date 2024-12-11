@@ -13,3 +13,6 @@ venv
 
 # thx Apple
 .DS_Store
+
+# EditAliDNS.py
+log.json

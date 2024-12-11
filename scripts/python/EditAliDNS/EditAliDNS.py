@@ -10,6 +10,7 @@ from aliyunsdkalidns.request.v20150109.AddDomainRecordRequest import (
 )
 import json
 import os
+import time
 
 """
 在开始之前, 需要安装依赖
@@ -27,18 +28,42 @@ class AliyunDNS:
         self.domain_name = domain_name
 
     def get_domain_records(self):
-        """获取域名解析记录"""
+        """获取域名解析记录(支持分页获取所有记录)"""
         request = DescribeDomainRecordsRequest()
         request.set_accept_format("json")
         request.set_DomainName(self.domain_name)
 
-        try:
-            response = self.client.do_action_with_exception(request)
-            records = json.loads(response)
-            return records["DomainRecords"]["Record"]
-        except Exception as e:
-            print(f"获取解析记录失败：{str(e)}")
-            return []
+        all_records = []  # 用于存储所有解析记录
+        page_number = 1
+        page_size = 200  # 每页返回的最大记录数, 可选100-500
+
+        while True:
+            request.set_PageNumber(page_number)
+            request.set_PageSize(page_size)
+
+            # 降速
+            time.sleep(1)
+
+            try:
+                response = self.client.do_action_with_exception(request)
+                data = json.loads(response)
+
+                # 获取当前页的记录
+                records = data["DomainRecords"]["Record"]
+                all_records.extend(records)
+
+                # 检查是否还有下一页
+                total_count = data["TotalCount"]
+                if page_number * page_size >= total_count:
+                    break
+
+                page_number += 1  # 获取下一页
+            except Exception as e:
+                print(f"获取解析记录失败：{str(e)}")
+                return []
+        print(f"共获取到 {len(all_records)} 条解析记录")
+
+        return all_records
 
     def update_domain_record(self, record_id, rr, record_type, value):
         """更新域名解析记录"""
@@ -87,10 +112,13 @@ def main():
     dns = AliyunDNS(ACCESS_KEY_ID, ACCESS_KEY_SECRET, DOMAIN_NAME)
 
     # 要批量修改的记录列表
-    records_to_update = [{"rr": "www", "type": "A", "value": "192.168.1.1"}]
+    records_to_update = [{"rr": "devops", "type": "A", "value": "192.168.6.216"}]
 
     # 获取现有解析记录
     existing_records = dns.get_domain_records()
+
+    with open("log.json", "w", encoding="UTF-8") as f:
+        f.write(str(existing_records))
 
     # 遍历要更新的记录
     for new_record in records_to_update:
