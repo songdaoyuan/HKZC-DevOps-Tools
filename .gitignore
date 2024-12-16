@@ -19,5 +19,4 @@ log.json
 *.xlsx
 
 # CoreFWRouteRulesOutput
-raw-01.payload
-raw-01.payload
+*.payload
