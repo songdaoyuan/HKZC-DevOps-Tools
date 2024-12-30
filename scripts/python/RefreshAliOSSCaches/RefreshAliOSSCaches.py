@@ -61,7 +61,7 @@ class Sample:
     ) -> None:
         client = Sample.create_client()
         refresh_object_caches_request = cdn_20180510_models.RefreshObjectCachesRequest(
-            object_path='https://dgp-h5.hysz.co/'
+            object_path='http://foo.bar/'      # 示例的域名格式, 由于域名不存在会触发API的异常
         )
         runtime = util_models.RuntimeOptions()
         try:
