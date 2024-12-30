@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # 调用阿里云的API实现 OSS CDN 的强制缓存刷新
 # 文档 https://api.aliyun.com/api/Cdn/2018-05-10/RefreshObjectCaches?RegionId=cn-hangzhou&tab=DEMO&lang=PYTHON&useCommon=true
