@@ -14,15 +14,24 @@
 
 ## 脚本列表和说明
 
-* DiskIOBench.sh
-* GetAvailableK8sNodePorts.sh
-* InstallDocker.sh
-* LemonBench.sh
-* LinuxVMDataDiskAutoInitialize.sh
-* LinuxVMDiskAutoInitialize2.sh
-* OSInit.sh
-* rdocker.sh
-* tcping.sh
-* rpull.sh | 一个借助代理服务器拉取docker image的脚本
-* mysql_backup.sh | 一个结合crontab计划任务使用mysqldump进行数据库备份的脚本
-* EditAliDNS.py | 一个快速批量修改阿里云DNS解析记录的脚本
+1. Shell脚本
+
+    * DiskIOBench.sh | Linux磁盘性能测试
+    * GetAvailableK8sNodePorts.sh | 获取K8s节点的所有可用NodePorts
+    * InstallDocker.sh | Linux安装Docker
+    * LemonBench.sh | Linux跑分脚本
+    * LinuxVMDataDiskAutoInitialize.sh | 初始化Linux磁盘
+    * LinuxVMDiskAutoInitialize2.sh | 初始化Linux磁盘
+    * LogCleanner.sh | 清理Linux服务器的日志文件
+    * mysql_backup.sh | 结合Crontab计划任务使用MysqlDump进行数据库备份
+    * OSInit.sh | 初始化多种发行版的Shell脚本
+    * ppull.sh | proxy-pull, 连接到代理服务器并拉取Docker镜像
+    * tcping.sh | 使用Bash内建的功能实现tcp连接性测试
+
+2. Python脚本
+
+    * CoreFWRouteRulesOutput.ipynb | 读取华为USG6610E防火墙的的payload并导出为xlsx表格
+    * EditAliDNS.py | 批量修改阿里云DNS解析记录
+    * GiteeAPIQuery.py | 调用GiteeAPI查询企业仓库和仓库所属成员并导出为xlsx表格
+    * RefreshAliOSSCaches.py | 调用阿里云API刷新域名所对应的OSS桶的CDN缓存
+    * restart_nginx.py | 连接并重启NGINX服务器
