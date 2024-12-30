@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # 调用阿里云的API实现 OSS CDN 的强制缓存刷新
+# 文档 https://api.aliyun.com/api/Cdn/2018-05-10/RefreshObjectCaches?RegionId=cn-hangzhou&tab=DEMO&lang=PYTHON&useCommon=true
+
 import os
 import sys
 
@@ -25,8 +27,6 @@ class Sample:
         @return: Client
         @throws Exception
         """
-        # 工程代码泄露可能会导致 AccessKey 泄露，并威胁账号下所有资源的安全性。以下代码示例仅供参考。
-        # 建议使用更安全的 STS 方式，更多鉴权访问方式请参见：https://help.aliyun.com/document_detail/378659.html。
         config = open_api_models.Config(
             access_key_id=os.environ['AccessKeyID'],
             access_key_secret=os.environ['AccessKeySecret']
@@ -41,7 +41,7 @@ class Sample:
     ) -> None:
         client = Sample.create_client()
         refresh_object_caches_request = cdn_20180510_models.RefreshObjectCachesRequest(
-            object_path='https://dgp-h5.hysz.co/'
+            object_path='https://foo.bar/'
         )
         runtime = util_models.RuntimeOptions()
         try:
@@ -61,7 +61,7 @@ class Sample:
     ) -> None:
         client = Sample.create_client()
         refresh_object_caches_request = cdn_20180510_models.RefreshObjectCachesRequest(
-            object_path='http://foo.bar/'      # 示例的域名格式, 由于域名不存在会触发API的异常
+            object_path='https://foo.bar/'      # 示例的域名格式, 由于域名不存在会触发API的异常
         )
         runtime = util_models.RuntimeOptions()
         try:
@@ -77,7 +77,6 @@ class Sample:
 
 
 if __name__ == '__main__':
-    # 刷新根目录下所有文件：http://example.com/
-    # 默认Jenkins中域名形式为 a.hysz.co
-    # 一次只刷新一条 URL 的缓存
+    # 刷新根目录下所有文件, 格式形如 http://example.com/ 完整说明参考示例文档
+    # 默认Jenkins中域名形式为 a.hysz.co, 修改调用只刷新传入的第一条域名
     Sample.main([f"https://{sys.argv[1]}/"])
