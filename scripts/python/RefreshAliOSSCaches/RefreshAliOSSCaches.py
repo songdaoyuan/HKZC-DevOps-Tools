@@ -3,6 +3,10 @@
 # 调用阿里云的API实现 OSS CDN 的强制缓存刷新
 # 文档 https://api.aliyun.com/api/Cdn/2018-05-10/RefreshObjectCaches?RegionId=cn-hangzhou&tab=DEMO&lang=PYTHON&useCommon=true
 
+# TL;DR
+# pip install alibabacloud_cdn20180510==4.2.2 python-dotenv
+# python3 RefreshAliOSSCaches.py aaa.yourdomain.com
+
 import os
 import sys
 
