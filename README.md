@@ -27,6 +27,7 @@
     * OSInit.sh | 初始化多种发行版的Shell脚本
     * ppull.sh | proxy-pull, 连接到代理服务器并拉取Docker镜像
     * tcping.sh | 使用Bash内建的功能实现tcp连接性测试
+    * rsync_nginx_config.sh | 用于监视和自动同步NGINX的配置文件到从节点
 
 2. Python脚本
 
