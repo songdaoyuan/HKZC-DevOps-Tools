@@ -1,4 +1,0 @@
-# 构建 Dockerfile-jdk_8u422-dbg-allin1
-# 在相比于原 jre 镜像, 替换为 jdk 并添加 arthas 支持
-
-FROM harbor.hysz.co/basics/eclipse-temurin:8u422-b05-jdk-jammy

@@ -36,10 +36,20 @@ jammy是ubuntu版本代号, 对应2204, 还有noble(2404), ubi9-minimal(RH9)...�
 
 prod镜像为精简的jre镜像, 适用于对性能有需求的生产环境, 提供最精简的镜像打包
 
-dgb镜像在精简jre镜像中添加了便于调试的工具包 (tcping.sh \ netcat、btop、vim、tcpdump、unzip) 、性能追踪工具 skywalking 和运维脚本库 scripts
+dgb镜像在精简jre镜像中添加了便于调试的工具包 (netcat、btop、vim、tcpdump、unzip) 、性能追踪工具 skywalking 和运维脚本库 scripts (tcping.sh \ aliyun-arthas.sh)
+
+同步更新glibc版本以适配openCV的需求
+
+启用中文语言包
 
 同步构建amd64和arm64/v8双版本镜像
 
 ## 镜像分析工具
 
 可使用官方自带的docker-inspect分析, 或者使用第三方工具`dive`
+
+## 更新历史
+
+20241001 初版镜像制作完成
+20250306 移除skywalking、配置了完整中文语言支持和中国时区、修复了GLIBC链接、新增了阿里云arthas分析工具
+Next 计划新增[posting](https://github.com/darrenburns/posting)工具...

@@ -1,22 +1,29 @@
 # 构建 jre_8u422-dbg
 # 默认已包含 curl wget fontconfig ca-certificates p11-kit tzdata locales
-# 默认语言和字符编码为 ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
-# 可选变更为 ENV LANG=zh_CN.UTF-8 LANGUAGE=zh_CN.UTF-8
 
 FROM harbor.hysz.co/basics/eclipse-temurin:8u422-b05-jre-jammy
 
 LABEL org.opencontainers.image.authors="songdaoyuan@focus-in.cn"
 
 # apt 安装工具包(netcat \ btop \ vim \ tcpdump \ unzip)
-
 # 使用 DEBIAN_FRONTEND=noninteractive 禁用任何交互式提示
 RUN set -eux; \
     apt-get update; \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends netcat btop vim tcpdump unzip; \
     rm -rf /var/lib/apt/lists/*
 
-# 复制 skywalking-agent-8.11.0 中所有文件到 /skywalking-agent 
-COPY skywalking-agent-8.11.0/ /skywalking-agent
+# 启用中文语言包和中国时区
+RUN echo "zh_CN.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen; \
+    echo "export LANG=zh_CN.UTF-8" >> /etc/profile && echo "export LANGUAGE=zh_CN.UTF-8" >> /etc/profile; \
+    ln -fs /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo "Asia/Shanghai" > /etc/timezone
 
-# 复制 scripts 文件夹到 / 
+# 复制 skywalking-agent-8.11.0 中所有文件到 /skywalking-agent 
+# COPY skywalking-agent-8.11.0/ /skywalking-agent
+
+# 修复GLIBC链接问题
+# 查看 libm.so.6 链接的 GLIBC 版本 apt install binutils && strings /lib/x86_64-linux-gnu/libm.so.6 | grep GLIBC_
+RUN ln -s /lib/x86_64-linux-gnu/libm.so.6 /lib64/libm.so.6
+
+
+# 复制 scripts 文件夹到容器中, scripts 中包含 aliyun arthas 
 COPY --chmod=755 scripts/ /scripts
