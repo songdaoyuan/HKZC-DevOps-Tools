@@ -5,9 +5,17 @@ FROM harbor.hysz.co/basics/eclipse-temurin:8u422-b05-jre-jammy
 
 LABEL org.opencontainers.image.authors="songdaoyuan@focus-in.cn"
 
+# 复制 scripts 文件夹到容器中, scripts 中包含 aliyun arthas 
+COPY --chmod=755 scripts/ /scripts
+
+# 安装额外的字体文件
+COPY fonts/ /usr/share/fonts
+
+# 更新字体缓存
 # apt 安装工具包(netcat \ btop \ vim \ tcpdump \ unzip)
 # 使用 DEBIAN_FRONTEND=noninteractive 禁用任何交互式提示
 RUN set -eux; \
+    fc-cache -f; \
     apt-get update; \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends netcat btop vim tcpdump unzip; \
     rm -rf /var/lib/apt/lists/*
@@ -23,7 +31,3 @@ RUN echo "zh_CN.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen; \
 # 修复GLIBC链接问题
 # 查看 libm.so.6 链接的 GLIBC 版本 apt install binutils && strings /lib/x86_64-linux-gnu/libm.so.6 | grep GLIBC_
 RUN ln -s /lib/x86_64-linux-gnu/libm.so.6 /lib64/libm.so.6
-
-
-# 复制 scripts 文件夹到容器中, scripts 中包含 aliyun arthas 
-COPY --chmod=755 scripts/ /scripts

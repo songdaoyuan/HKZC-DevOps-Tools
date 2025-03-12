@@ -52,4 +52,5 @@ dgb镜像在精简jre镜像中添加了便于调试的工具包 (netcat、btop�
 
 20241001 初版镜像制作完成
 20250306 移除skywalking、配置了完整中文语言支持和中国时区、修复了GLIBC链接、新增了阿里云arthas分析工具
+20250312 在构建过程中新镇了额外的字体文件
 Next 计划新增[posting](https://github.com/darrenburns/posting)工具...

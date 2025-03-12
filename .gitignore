@@ -1,6 +1,7 @@
 # 忽略构建镜像过程中的第三方软件包
 docker-build/base-java_8/skywalking-agent-8.11.0
 docker-build/base-java_8/scripts
+docker-build/base-java_8/fonts
 
 # 忽略压缩包
 *.zip
