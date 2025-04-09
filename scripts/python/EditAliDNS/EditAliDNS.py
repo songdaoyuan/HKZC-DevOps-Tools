@@ -21,6 +21,12 @@ from datetime import datetime, timedelta
 code by songdaoyuan@2024.12.11
 
 通过读取阿里云格式的excel解析表格来批量修改域名的DNS解析
+https://dns.console.aliyun.com/#/dns/export/hysz.co 在这个域名获取完整导出的域名解析模板
+读取文件，对比最后修改事件，调用Ali API更新DNS解析
+ToDo
+1. 优化代码逻辑
+2. 调整读取和修改解析的方式
+
 pd.read_excel("dev_dns_records.xlsx")
 
 在开始之前, 需要安装依赖
