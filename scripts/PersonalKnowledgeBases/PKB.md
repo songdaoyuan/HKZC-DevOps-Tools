@@ -34,6 +34,13 @@ cd ~/App && pwd
 
 # 拉取最新的Dify源码，此时版本为1.3.0
 git clone https://github.com/langgenius/dify.git
+
+cd /Users/jw/App/dify/docker
+mv .env.example .env
+docker-compode pull
+# 如果遇到速度异常，检查代理配置或者docker login配置
+docker-compose up -d
+# Dify服务默认监听80端口，直接访问127.0.0.1即可到达Dify服务
 ```
 
 ## 安装和下载LLM运行时LM Studio
