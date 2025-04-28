@@ -28,10 +28,28 @@
 ## 拉取最新的Dify源码并启动容器服务
 
 ```Bash
-cd ~ && mkdir App && cd App
-pwd
+mkdir -p ~/App
+cd ~/App && pwd
 # /Users/jw/App
 
 # 拉取最新的Dify源码，此时版本为1.3.0
 git clone https://github.com/langgenius/dify.git
 ```
+
+## 安装和下载LLM运行时LM Studio
+
+[下载](https://lmstudio.ai)并安装最新版本的`LM Studio`
+
+![alt text](0x04.下载LMStudio.png)
+
+开启LMS的开机自启动、关闭系统过载保护、开启`llama.cpp`运行时自动更新
+
+![alt text](0x05.LMS的API接口配置.png)
+
+配置LMS的API接口配置，允许在局域网中提供服务，监听端口`12345`，允许LLM的即时加载
+
+如果不在局域网中提供服务，本地LLM API地址为`127.0.0.1:12345/v1`
+
+拉取LLM，推理模型选择了通义千问的`QWQ-32B-Q8`、Google的`Gemma-3-27B-QAT`
+
+非推理模型选择了清华智谱的`GLM-4-32B-0414-Q8`
