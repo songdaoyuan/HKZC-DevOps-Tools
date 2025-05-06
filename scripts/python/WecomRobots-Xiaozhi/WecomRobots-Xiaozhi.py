@@ -1,3 +1,10 @@
+'''
+使用crontab定时任务
+crontab -e
+每天8点20执行脚本，将脚本的输出（标准输出和标准错误）追加到日志文件/var/log/wecom_robots.log
+20 8 * * * /usr/bin/python3 /home/scripts/WecomRobots-Xiaozhi/WecomRobots-Xiaozhi.py >> /var/log/wecom_robots.log 2>&1
+'''
+
 import requests
 import re
 from datetime import datetime
@@ -5,7 +12,8 @@ from datetime import datetime
 def daily_hitokoto():
     """每日一言主函数，读取content.payload文件并发送当日内容"""
     try:
-        with open('content.payload', 'r', encoding='utf-8') as f:
+        # 在crontab中使用相对路径可能会导致找不到文件
+        with open('/home/scripts/WecomRobots-Xiaozhi/content.payload', 'r', encoding='utf-8') as f:
             lines = f.readlines()
     except FileNotFoundError:
         print("Error: content.payload文件未找到")
