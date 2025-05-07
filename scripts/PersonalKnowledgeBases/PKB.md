@@ -57,6 +57,14 @@ docker-compose up -d
 
 如果不在局域网中提供服务，本地LLM API地址为`127.0.0.1:12345/v1`
 
+### LLM的选择
+
 拉取LLM，推理模型选择了通义千问的`QWQ-32B-Q8`、Google的`Gemma-3-27B-QAT`
 
 非推理模型选择了清华智谱的`GLM-4-32B-0414-Q8`
+
+### Embdding模型的选择
+
+text-embedding-nomic-embed-text-v1.5@f32
+text-embedding-snowflake-arctic-embed-m-v1.5
+text-embedding-mxbai-embed-large-v1
