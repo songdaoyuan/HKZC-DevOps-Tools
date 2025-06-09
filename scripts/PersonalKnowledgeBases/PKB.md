@@ -55,11 +55,11 @@ docker-compose up -d
 
 配置LMS的API接口配置，允许在局域网中提供服务，监听端口`12345`，允许LLM的即时加载
 
-如果不在局域网中提供服务，本地LLM API地址为`127.0.0.1:12345/v1`
+如果不在局域网中提供服务，本地LLM API地址为`127.0.0.1:12345/v1`。这样会引入一个新的问题，Docker 部署的 Dify 使用桥接模式启动了一个子网，子网访问不到宿主机的本地回环网络，需要在 Docker Desktop 里面开启允许访问宿主机，配置使用 `host.docker.internal` 这个特殊的地址。
 
 ### LLM的选择
 
-拉取LLM，推理模型选择了通义千问的`QWQ-32B-Q8`、Google的`Gemma-3-27B-QAT`
+拉取LLM，推理模型选择了通义千问的`QWQ-32B-Q8`、Google的`Gemma-3-27B-QAT`、以及最新发布的 Qwen 系列的 MoE 模型
 
 非推理模型选择了清华智谱的`GLM-4-32B-0414-Q8`
 
